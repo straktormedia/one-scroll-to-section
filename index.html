@@ -254,7 +254,7 @@
 
         fullPages.forEach((fullPage) => {
           // Scroll to Section Touch
-          fullPage.addEventListener("touchstart", function (e) {
+          fullPage.addEventListener("touchmove", function (e) {
             e.preventDefault();
             const currentPageY = Math.round(e.changedTouches[0].screenY);
             if (touchStartPosY === currentPageY) return;
