@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>One Scroll to Section - VanillaJS</title>
+
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.js"></script>
+    <script src="https://mreq.github.io/slick-lightbox/dist/slick-lightbox.js"></script>
+    <link href="https://mreq.github.io/slick-lightbox/dist/slick-lightbox.css" rel="stylesheet" /> -->
+
+    <script src="jquery-1.12.3.min.js"></script>
+    <script src="slick-1.6.0.min.js"></script>
+    <script src="slick-lightbox.js"></script>
+    <link href="slick-lightbox.css" rel="stylesheet" />
+    <link href="slick.css" rel="stylesheet" />
+    <link href="slick-theme.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+      $(document).on("ready", function () {
+        // Slick
+        $(".general-carousel-1").slick({
+          nextArrow: ".btn-next-1",
+          prevArrow: ".btn-previous-1 ",
+          infinite: true,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          mobileFirst: true,
+          // dots: true,
+          speed: 1000,
+          responsive: [
+            {
+              breakpoint: 1024,
+              settings: "unslick",
+            },
+          ],
+        });
+
+        $(".general-carousel-2").slick({
+          nextArrow: ".btn-next-2",
+          prevArrow: ".btn-previous-2 ",
+          infinite: true,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          dots: true,
+          speed: 1000,
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////                                                                                //////////////
+        ////////////    O N E   S C R O L L    T O    S E C T I O N    -    V a n i l l a    J S    //////////////
+        ////////////                                                                                //////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Variables
+        const fullPages = document.querySelectorAll(".one-scroll");
+        const fullPagesArray = Array.from(fullPages);
+        const notFullPages = document.querySelectorAll(".not-full-page");
+        const notFullPagesArray = Array.from(notFullPages);
+        const navDots = document.querySelectorAll(".nav-dot");
+        const navDotsContainer = document.querySelector(".nav-dots-container");
+
+        // Check if in Viewport Function
+        function checkIfInViewport(elem) {
+          const docViewTop = $(window).scrollTop();
+          const elemTop = $(elem).offset().top;
+          return elemTop >= docViewTop;
+        }
+
+        // Check Which one is in Viewport
+        let currentFullPage = fullPagesArray.find((fullPage) =>
+          checkIfInViewport(fullPage)
+        );
+
+        // let currentNotFullPage = notFullPagesArray.find((notFullPage) =>
+        //   checkIfInViewport(notFullPage)
+        // );
+
+        // Initial state
+        document
+          .querySelector(`[data-dot="${currentFullPage.dataset.section}"]`)
+          .classList.add("dot-active");
+
+        // Nav Dots as Buttons
+        navDotsContainer.addEventListener("click", function (e) {
+          let clickedDot = e.target.closest(".nav-dot");
+          if (clickedDot) {
+            navDots.forEach((navDot) => navDot.classList.remove("dot-active"));
+            clickedDot.classList.add("dot-active");
+            document
+              .querySelector(`[data-section="${clickedDot.dataset.dot}"]`)
+              .scrollIntoView({
+                behavior: "smooth",
+              });
+          }
+        });
+
+        // Scroll to Section Mouse Wheel
+        const scrollToSection = function (e) {
+          e.preventDefault();
+
+          // Scrolling UP
+          if (e.deltaY < 0) {
+            // Scrolling UP to a Section
+            if (
+              currentFullPage.previousElementSibling &&
+              currentFullPage.previousElementSibling.classList.contains(
+                "one-scroll"
+              )
+            ) {
+              console.log("Scrolling UP to a Section");
+              currentFullPage.previousElementSibling.scrollIntoView({
+                behavior: "smooth",
+              });
+              currentFullPage = currentFullPage.previousElementSibling;
+              console.log(currentFullPage);
+
+              navDots.forEach((navDot, i) => {
+                navDot.classList.remove("dot-active");
+                if (currentFullPage == fullPages[i]) {
+                  navDot.classList.add("dot-active");
+                }
+              });
+
+              // Scrolling UP from Footer
+            } else if (
+              currentFullPage.previousElementSibling &&
+              currentFullPage.previousElementSibling.classList.contains(
+                "one-scroll-container"
+              )
+            ) {
+              console.log("Scrolling UP from Footer");
+
+              currentFullPage.previousElementSibling.lastElementChild.scrollIntoView(
+                {
+                  behavior: "smooth",
+                }
+              );
+              currentFullPage =
+                currentFullPage.previousElementSibling.lastElementChild;
+              console.log(currentFullPage);
+              navDots.forEach((navDot, i) => {
+                navDot.classList.remove("dot-active");
+                if (currentFullPage == fullPages[i]) {
+                  navDot.classList.add("dot-active");
+                }
+              });
+            }
+
+            // Scrolling UP to Header
+            else if (
+              currentFullPage.parentElement.previousElementSibling.classList.contains(
+                "header"
+              )
+            ) {
+              console.log("Scrolling UP to Header");
+              currentFullPage.parentElement.previousElementSibling.scrollIntoView(
+                {
+                  behavior: "smooth",
+                }
+              );
+              currentFullPage =
+                currentFullPage.parentElement.previousElementSibling;
+              console.log(currentFullPage);
+              // console.log(currentFullPage.parentElement.previousElementSibling);
+              // if(currentNotFullPage.nextElementSibling.children[0])
+
+              navDots.forEach((navDot, i) => {
+                navDot.classList.remove("dot-active");
+                if (currentFullPage == fullPages[i]) {
+                  navDot.classList.add("dot-active");
+                }
+              });
+            }
+
+            return;
+          }
+
+          // Scrolling Down
+          else if (e.deltaY > 0) {
+            // Scrolling DOWN to a Section
+            if (
+              currentFullPage.nextElementSibling &&
+              currentFullPage.nextElementSibling.classList.contains(
+                "one-scroll"
+              )
+            ) {
+              console.log("Scrolling DOWN to a Section");
+              currentFullPage.nextElementSibling.scrollIntoView({
+                behavior: "smooth",
+              });
+              currentFullPage = currentFullPage.nextElementSibling;
+              console.log(currentFullPage);
+              navDots.forEach((navDot, i) => {
+                navDot.classList.remove("dot-active");
+                if (currentFullPage == fullPages[i]) {
+                  navDot.classList.add("dot-active");
+                }
+              });
+            }
+            // Scrolling DOWN from Header
+            else if (
+              currentFullPage.nextElementSibling &&
+              currentFullPage.classList.contains("header") &&
+              !currentFullPage.nextElementSibling.classList.contains(
+                "one-scroll"
+              )
+            ) {
+              console.log("Scrolling DOWN from Header");
+              currentFullPage.nextElementSibling.firstElementChild.scrollIntoView(
+                {
+                  behavior: "smooth",
+                }
+              );
+              currentFullPage =
+                currentFullPage.nextElementSibling.firstElementChild;
+              console.log(currentFullPage);
+              navDots.forEach((navDot, i) => {
+                navDot.classList.remove("dot-active");
+                if (currentFullPage == fullPages[i]) {
+                  navDot.classList.add("dot-active");
+                }
+              });
+            }
+            // Scrolling DOWN to Footer
+            else if (
+              currentFullPage.parentElement.nextElementSibling &&
+              currentFullPage.parentElement.nextElementSibling.classList.contains(
+                "footer"
+              )
+            ) {
+              console.log("Scrolling DOWN to Footer");
+
+              currentFullPage.parentElement.nextElementSibling.scrollIntoView({
+                behavior: "smooth",
+              });
+              currentFullPage =
+                currentFullPage.parentElement.nextElementSibling;
+              console.log(currentFullPage);
+            } else return;
+            navDots.forEach((navDot, i) => {
+              navDot.classList.remove("dot-active");
+              if (currentFullPage == fullPages[i]) {
+                navDot.classList.add("dot-active");
+              }
+            });
+            console.log(currentFullPage);
+            return;
+          }
+        };
+
+        let touchStartPosY = 0;
+
+        // Attach Handlers
+
+        fullPages.forEach((fullPage) => {
+          // Scroll to Section Touch
+          fullPage.addEventListener("touchstart", function (e) {
+            e.preventDefault();
+            const currentPageY = Math.round(e.changedTouches[0].screenY);
+            if (touchStartPosY === currentPageY) return;
+
+            // Scrolling DOWN
+            if (touchStartPosY - currentPageY > 0) {
+              console.log("down");
+              console.log(currentFullPage);
+
+              // Scrolling DOWN to a Section
+              if (
+                currentFullPage.nextElementSibling &&
+                currentFullPage.nextElementSibling.classList.contains(
+                  "one-scroll"
+                )
+              ) {
+                console.log("Scrolling DOWN to a Section");
+                currentFullPage.nextElementSibling.scrollIntoView({
+                  behavior: "smooth",
+                });
+                currentFullPage = currentFullPage.nextElementSibling;
+                console.log(currentFullPage);
+                navDots.forEach((navDot, i) => {
+                  navDot.classList.remove("dot-active");
+                  if (currentFullPage == fullPages[i]) {
+                    navDot.classList.add("dot-active");
+                  }
+                });
+              }
+
+              // Scrolling DOWN from Header
+              else if (
+                currentFullPage.nextElementSibling &&
+                currentFullPage.classList.contains("header") &&
+                !currentFullPage.nextElementSibling.classList.contains(
+                  "one-scroll"
+                )
+              ) {
+                console.log("Scrolling DOWN from Header");
+                currentFullPage.nextElementSibling.firstElementChild.scrollIntoView(
+                  {
+                    behavior: "smooth",
+                  }
+                );
+                currentFullPage =
+                  currentFullPage.nextElementSibling.firstElementChild;
+                console.log(currentFullPage);
+                navDots.forEach((navDot, i) => {
+                  navDot.classList.remove("dot-active");
+                  if (currentFullPage == fullPages[i]) {
+                    navDot.classList.add("dot-active");
+                  }
+                });
+              }
+
+              // Scrolling DOWN to Footer
+              else if (
+                currentFullPage.parentElement.nextElementSibling &&
+                currentFullPage.parentElement.nextElementSibling.classList.contains(
+                  "footer"
+                )
+              ) {
+                console.log("Scrolling DOWN to Footer");
+
+                currentFullPage.parentElement.nextElementSibling.scrollIntoView(
+                  {
+                    behavior: "smooth",
+                  }
+                );
+                currentFullPage =
+                  currentFullPage.parentElement.nextElementSibling;
+                console.log(currentFullPage);
+              } else return;
+              navDots.forEach((navDot, i) => {
+                navDot.classList.remove("dot-active");
+                if (currentFullPage == fullPages[i]) {
+                  navDot.classList.add("dot-active");
+                }
+              });
+              console.log(currentFullPage);
+              return;
+
+              touchStartPosY = currentPageY;
+              return;
+            }
+
+            // Scrolling UP
+            if (touchStartPosY - currentPageY < 0) {
+              console.log("up");
+
+              // Scrolling UP to a Section
+              if (
+                currentFullPage.previousElementSibling &&
+                currentFullPage.previousElementSibling.classList.contains(
+                  "one-scroll"
+                )
+              ) {
+                console.log("Scrolling UP to a Section");
+                currentFullPage.previousElementSibling.scrollIntoView({
+                  behavior: "smooth",
+                });
+                currentFullPage = currentFullPage.previousElementSibling;
+                console.log(currentFullPage);
+
+                navDots.forEach((navDot, i) => {
+                  navDot.classList.remove("dot-active");
+                  if (currentFullPage == fullPages[i]) {
+                    navDot.classList.add("dot-active");
+                  }
+                });
+              }
+
+              // Scrolling UP from Footer
+              else if (
+                currentFullPage.previousElementSibling &&
+                currentFullPage.previousElementSibling.classList.contains(
+                  "one-scroll-container"
+                )
+              ) {
+                console.log("Scrolling UP from Footer");
+
+                currentFullPage.previousElementSibling.lastElementChild.scrollIntoView(
+                  {
+                    behavior: "smooth",
+                  }
+                );
+                currentFullPage =
+                  currentFullPage.previousElementSibling.lastElementChild;
+                console.log(currentFullPage);
+                navDots.forEach((navDot, i) => {
+                  navDot.classList.remove("dot-active");
+                  if (currentFullPage == fullPages[i]) {
+                    navDot.classList.add("dot-active");
+                  }
+                });
+              }
+
+              // Scrolling UP to Header
+              else if (
+                currentFullPage.parentElement.previousElementSibling.classList.contains(
+                  "header"
+                )
+              ) {
+                console.log("Scrolling UP to Header");
+                currentFullPage.parentElement.previousElementSibling.scrollIntoView(
+                  {
+                    behavior: "smooth",
+                  }
+                );
+                currentFullPage =
+                  currentFullPage.parentElement.previousElementSibling;
+                console.log(currentFullPage);
+                // console.log(currentFullPage.parentElement.previousElementSibling);
+                // if(currentNotFullPage.nextElementSibling.children[0])
+
+                navDots.forEach((navDot, i) => {
+                  navDot.classList.remove("dot-active");
+                  if (currentFullPage == fullPages[i]) {
+                    navDot.classList.add("dot-active");
+                  }
+                });
+              }
+
+              touchStartPosY = currentPageY;
+              return;
+            }
+          }),
+            { passive: false };
+
+          fullPage.addEventListener("wheel", scrollToSection),
+            { passive: false };
+        });
+
+        // notFullPages.forEach((notFullPage) => {
+        //   notFullPage.addEventListener("wheel", function () {
+        //     // if (notFullPage==currentNotFullPage.nextElementSibling.children[0])
+        //     currentNotFullPage = notFullPagesArray.find((notFullPage) =>
+        //       checkIfInViewport(notFullPage)
+        //     );
+        //     console.log(notFullPage);
+        //     console.log(currentNotFullPage);
+        //     console.log(
+        //       notFullPage == currentNotFullPage.nextElementSibling.children[0]
+        //     );
+        //   });
+        // });
+
+        // let touchStartPosY = 0;
+        // window.addEventListener("touchstart", (e) => {
+        //   // Different devices give different values with different decimal percentages.
+        //   const currentPageY = Math.round(e.changedTouches[0].screenY);
+        //   if (touchStartPosY === currentPageY) return;
+
+        //   if (touchStartPosY - currentPageY > 0) {
+        //     console.log("down");
+        //   } else if (touchStartPosY - currentPageY < 0) {
+        //     console.log("up");
+        //   }
+        //   touchStartPosY = currentPageY;
+        // });
+
+        // notFullPages.forEach((notFullPage) => {
+        //   notFullPage.removeEventListener("wheel", scrollToSection),
+        //     { passive: false };
+        // });
+
+        // currentNotFullPage.addEventListener("wheel", function () {
+        //   console.log(currentNotFullPage);
+        // });
+
+        // notFullPages.forEach((notFullPage) => {
+        //   notFullPage.addEventListener(
+        //     "wheel",
+        //     function () {
+        //       console.log(currentNotFullPage);
+        //       console.log(
+        //         currentNotFullPage.closest("body").querySelector(".container")
+        //           .children[3]
+        //       );
+        //       currentNotFullPage
+        //         .closest("body")
+        //         .querySelector(".container")
+        //         .children[3].scrollIntoView({
+        //           behavior: "smooth",
+        //         });
+        //     },
+        //     { passive: false }
+        //   );
+        // });
+
+        // main.addEventListener("wheel", scrollToSection), { passive: false };
+
+        // main.addEventListener(
+        //   "wheel",
+        //   function (e) {
+        //     e.preventDefault();
+
+        //     if (e.deltaY < 0) {
+        //       for (let i = 0; i < fullPages.length; i++) {
+        //         if (currentFullPage.previousElementSibling) {
+        //           currentFullPage.previousElementSibling.scrollIntoView({
+        //             behavior: "smooth",
+        //           });
+        //           currentFullPage = currentFullPage.previousElementSibling;
+        //           console.log(currentFullPage);
+        //         }
+
+        //         return;
+        //       }
+        //     } else if (e.deltaY > 0) {
+        //       for (let i = 0; i < fullPages.length - 1; i++) {
+        //         if (currentFullPage.nextElementSibling) {
+        //           currentFullPage.nextElementSibling.scrollIntoView({
+        //             behavior: "smooth",
+        //           });
+
+        //           currentFullPage = currentFullPage.nextElementSibling;
+        //           console.log(currentFullPage);
+        //         }
+        //         return;
+        //       }
+        //     }
+        //   },
+        //   { passive: false }
+        // );
+
+        // const scrollBehavior = [
+        //   { transform: "rotate(0) scale(1)" },
+        //   { transform: "rotate(360deg) scale(0)" },
+        // ];
+
+        // const scrollTiming = {
+        //   duration: 2000,
+        //   iterations: 1,
+        // };
+
+        // buttonDown.addEventListener("click", function () {
+        //   nextSection.scrollIntoView();
+        // });
+
+        // buttonUp.addEventListener("click", function () {
+        //   prevSection.scrollIntoView();
+        // });
+
+        // window.onwheel = function (e) {
+        //   // print "false" if direction is down and "true" if up
+        //   // console.log(this.oldScroll > this.scrollY);
+        //   if (this.oldScroll < this.scrollY) {
+        //     buttonDown.click();
+        //     console.log("scroll down");
+        //   } else {
+        //     buttonUp.click();
+        //     console.log("scroll up");
+        //   }
+        //   this.oldScroll = this.scrollY;
+        // };
+
+        // console.log(currentFullPage);
+        // const classFinder = Array.from(fullPages).find((fullpage) =>
+        //   fullpage.classList.contains("full-page")
+        // );
+
+        // console.log(isScrolledIntoView(fullPages[0]));
+
+        //docViewTop: 47, docViewBottom: 674, elemTop: 47, elemBottom: 674 true
+        //docViewTop: 0, docViewBottom: 627, elemTop: 47, elemBottom: 674 false
+
+        // console.log(isScrolledIntoView(fullPages[0]));
+        // console.log(classFinder);
+
+        // function checkIsInViewport(fullPage) {
+        //   console.log(isScrolledIntoView(fullPage));
+        //   return isScrolledIntoView(fullPage);
+        // }
+
+        // main.addEventListener(
+        //   "wheel",
+        //   function (e) {
+        //     e.preventDefault();
+        //     if (e.deltaY < 0) {
+        //       for (let i = 1; i < fullPages.length; i++) {
+        //         // console.log(fullPages[i - 1]);
+        //         fullPages[i - 1].scrollIntoView({ behavior: "smooth" });
+        //       }
+        //     } else if (e.deltaY > 0) {
+        //       for (let i = 0; i < fullPages.length - 1; i++) {
+        //         // console.log(fullPages[i + 1]);
+        //         fullPages[i + 1].scrollIntoView({ behavior: "smooth" });
+        //       }
+        //     }
+        //   },
+        //   { passive: false }
+        // );
+
+        // isScrolledIntoView(prevSection);
+
+        // window.addEventListener(
+        //   "wheel",
+        //   function (e) {
+        //     "use strict"; // Effectively throws an error when trying to assign isTrusted
+        //     console.log(`Is the user event trusted? ${e.isTrusted}`); // true
+        //     e.preventDefault(); // Stops the default behavior
+        //     if (e.deltaY < 0) {
+        //       console.log("Scrolling up...");
+
+        //       prevSection.scrollIntoView({
+        //         behavior: "smooth",
+        //       });
+        //       // buttonUp.click();
+        //     } else if (e.deltaY > 0) {
+        //       console.log("Scrolling down...");
+        //       nextSection.scrollIntoView({
+        //         behavior: "smooth",
+        //       });
+        //       // buttonDown.click();
+        //       // nextSection.animate(scrollBehavior, scrollTiming);
+        //     }
+        //   },
+        //   { passive: false }
+        // );
+
+        // let fired = false;
+        // window.onscroll = function (e) {
+        //   // print "false" if direction is down and "true" if up
+
+        //   if (this.oldScroll > this.scrollY) {
+        //     buttonUp.click();
+        //     // prevSection.scrollIntoView({ behavior: "smooth" });
+        //     console.log("up");
+        //   } else {
+        //     buttonDown.click();
+        //     // nextSection.scrollIntoView({ behavior: "smooth" });
+        //     console.log("down");
+        //   }
+        //   this.oldScroll = this.scrollY;
+        // };
+      });
+    </script>
+
+    <style>
+      /* html {
+        scroll-behavior: smooth;
+      } */
+
+      body {
+        overflow-x: hidden;
+        background-color: lightgray;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: min(1274px, 100%);
+      }
+
+      .general-carousel-1,
+      .general-carousel-2,
+      .full-page {
+        background-color: white;
+        border: solid 2px gray;
+        min-height: 100vh;
+        scroll-snap-align: start;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: min(1274px, 100%);
+        font-size: 5rem;
+      }
+
+      .section-0,
+      .section-5 {
+        background-color: lightblue;
+        border: solid 2px gray;
+        min-height: 50vh;
+        scroll-snap-align: start;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: min(1274px, 100%);
+        font-size: 5rem;
+      }
+
+      header,
+      footer,
+      .general-carousel-5 {
+        height: 10vh;
+        background-color: gray;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 3rem;
+      }
+
+      .image img {
+        width: 50%;
+      }
+      .nav-btns-1 {
+        display: none;
+      }
+
+      .nav-btns-2 {
+        display: flex;
+        justify-content: flex-end;
+        width: min(1274px, 100%);
+      }
+      .slick-dots {
+        background-color: #d0d0d0 !important;
+        height: 2px !important;
+        padding: 0 !important;
+        width: 100%;
+      }
+
+      .slick-dots ul {
+        display: flex !important;
+      }
+
+      .slick-dots li {
+        width: 30% !important;
+      }
+
+      .slick-dots li.slick-active button {
+        background-color: #0f0f0f !important;
+      }
+
+      .slick-dots li button:before {
+        display: none !important;
+      }
+
+      .slick-dots button {
+        background-color: #888888 !important;
+
+        height: 2px !important;
+        width: 100% !important;
+        padding: 0 !important;
+        position: absolute !important;
+      }
+
+      @media only screen and (max-width: 1024px) {
+        .nav-btns-1,
+        .nav-btns-2 {
+          display: flex;
+          justify-content: flex-end;
+          width: min(1274px, 100%);
+        }
+      }
+
+      @media only screen and (min-width: 1024px) {
+        .woman-health,
+        .general-health {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .general-health .image {
+          order: 3;
+        }
+      }
+
+      .nav-dots-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        position: fixed;
+        z-index: 50;
+        top: 40vh;
+        right: 2rem;
+      }
+
+      .nav-dot {
+        background-color: rgba(0, 0, 0, 0.664);
+        border-radius: 50%;
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+      }
+
+      .dot-active {
+        background-color: black;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      /* Scrollbar */
+      /* .scrollbar {
+        border-radius: 10px;
+        position: relative;
+        left: 0;
+        bottom: 20px;
+        z-index: 50;
+        height: 2px;
+        background-color: #d0d0d0;
+        width: min(1274px, 100%);
+      }
+
+      .scrollbar-slide {
+        transform: translate(0px, 0px);
+        width: calc(100% / 3);
+        height: 2px;
+        background-color: #0f0f0f;
+        position: absolute;
+        background: #0f0f0f;
+        border-radius: 10px;
+      } */
+    </style>
+  </head>
+  <body>
+    <div class="nav-dots-container">
+      <div class="nav-dot" data-dot="1"></div>
+      <div class="nav-dot" data-dot="2"></div>
+      <div class="nav-dot" data-dot="3"></div>
+      <div class="nav-dot" data-dot="4"></div>
+      <div class="nav-dot" data-dot="5"></div>
+      <div class="nav-dot" data-dot="6"></div>
+    </div>
+    <header class="header not-full-page one-scroll" data-section="1">
+      Header
+    </header>
+    <!-- <div class="not-full-page section-0" data-section="5">
+      Section 0 (outside of main)
+    </div> -->
+    <main class="one-scroll-container">
+      <div class="full-page one-scroll section-1" data-section="2">
+        Section 1
+      </div>
+      <div class="full-page one-scroll section-2" data-section="3">
+        Section 2
+      </div>
+      <div class="full-page one-scroll section-3" data-section="4">
+        Section 3
+      </div>
+      <div class="full-page one-scroll section-4" data-section="5">
+        Section 4
+      </div>
+    </main>
+    <!-- <div class="not-full-page section-5" data-section="5">
+      Section 5 (outside of main)
+    </div> -->
+    <!-- <div class="general-carousel-5 not-full-page" id="carousel-5">
+      <div>
+        <div class="half-section image">
+          <img src="img-1.png" alt="hpv cancer prevention" />
+        </div>
+        <div class="half-section details">
+          <p class="date">01/02/2022</p>
+          <h4>HPV CANCER PREVENTION</h4>
+          <p>
+            Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+            εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+            εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+            ίσχείτε λέγχου ελικά μΕτα,
+          </p>
+          <a href="" class="linkmore">Περισσότερα</a>
+        </div>
+      </div>
+      <div>
+        <div class="half-section image">
+          <img src="img-2.png" alt="hpv cancer prevention" />
+        </div>
+        <div class="half-section details">
+          <p class="date">01/02/2022</p>
+          <h4>HPV CANCER PREVENTION</h4>
+          <p>
+            Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+            εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+            εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+            ίσχείτε λέγχου ελικά μΕτα,
+          </p>
+          <a href="" class="linkmore">Περισσότερα</a>
+        </div>
+      </div>
+      <div>
+        <div class="half-section image">
+          <img src="img-3.png" alt="hpv cancer prevention" />
+        </div>
+        <div class="half-section details">
+          <p class="date">01/02/2022</p>
+          <h4>HPV CANCER PREVENTION</h4>
+          <p>
+            Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+            εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+            εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+            ίσχείτε λέγχου ελικά μΕτα,
+          </p>
+          <a href="" class="linkmore">Περισσότερα</a>
+        </div>
+      </div>
+    </div> -->
+    <footer class="footer not-full-page one-scroll" data-section="6">
+      Footer
+    </footer>
+  </body>
+</html>
+
+<!-- <section class="scroll-buttons">
+  <button class="up">UP</button>
+  <button class="down">DOWN</button>
+</section>
+<section class="container">
+  <div class="general-carousel-1 full-page" id="carousel-1">
+    <div class="woman-health">
+      <div class="half-section image">
+        <img src="img-1.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+    <div class="general-health">
+      <div class="half-section image">
+        <img src="img-2.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="slick-controls nav-btns-1">
+    <button class="btn-previous-1">Previous</button>
+    <button class="btn-next-1">Next</button>
+  </div> -->
+<!-- <div class="general-carousel-2 full-page" id="carousel-2">
+    <div>
+      <div class="half-section image">
+        <img src="img-1.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <p class="date">01/02/2022</p>
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+    <div>
+      <div class="half-section image">
+        <img src="img-2.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <p class="date">01/02/2022</p>
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+    <div>
+      <div class="half-section image">
+        <img src="img-3.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <p class="date">01/02/2022</p>
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+  </div> -->
+<!-- <div class="scrollbar">
+<div class="scrollbar-slide"></div>
+</div> -->
+<!-- <div class="slick-controls nav-btns-2">
+    <button class="btn-previous-2">Previous</button>
+    <button class="btn-next-2">Next</button>
+  </div> -->
+<!-- <div class="general-carousel-3 full-page" id="carousel-3">
+    <div>
+      <div class="half-section image">
+        <img src="img-1.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <p class="date">01/02/2022</p>
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="half-section image">
+        <img src="img-3.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <p class="date">01/02/2022</p>
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+  </div>
+  <div class="general-carousel-4 full-page" id="carousel-4">
+    <div>
+      <div class="half-section image">
+        <img src="img-1.png" alt="hpv cancer prevention" />
+      </div>
+      <div class="half-section details">
+        <p class="date">01/02/2022</p>
+        <h4>HPV CANCER PREVENTION</h4>
+        <p>
+          Ετα, αποθερινής εντισματότην επίνατικά σύνδεδαρία αποτέλεία
+          εγγράδοσης, γικείτε ίσχείτε λέγχου ελικά μΕτα, αποθερινής
+          εντισματότην επίνατικά σύνδεδαρία αποτέλεία εγγράδοσης, γικείτε
+          ίσχείτε λέγχου ελικά μΕτα,
+        </p>
+        <a href="" class="linkmore">Περισσότερα</a>
+      </div>
+    </div>
+  </div>
+</section> -->
